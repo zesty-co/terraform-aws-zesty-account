@@ -1,0 +1,39 @@
+name: Terraform checks
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: "1.13.2"
+
+      - name: Check formatting
+        run: terraform fmt -check -recursive
+
+      - name: Initialize root module
+        run: terraform init -backend=false
+
+      - name: Validate root module
+        run: terraform validate
+
+      - name: Initialize Kompass cluster module
+        working-directory: modules/kompass-cluster
+        run: terraform init -backend=false
+
+      - name: Validate Kompass cluster module
+        working-directory: modules/kompass-cluster
+        run: terraform validate
