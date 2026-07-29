@@ -12,5 +12,6 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Unified AWS account onboarding for base read-only access, Commitment Manager,
   and Kompass.
 - Management and linked AWS account support.
+- Standalone AWS accounts through the management/payer onboarding path.
 - Created and existing CUR support for management accounts.
 - Separate Kompass EKS cluster installation submodule.

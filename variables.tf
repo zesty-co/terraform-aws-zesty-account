@@ -15,7 +15,7 @@ variable "kompass" {
 }
 
 variable "account_type" {
-  description = "AWS account type declared by the customer. Set to management or linked. Standalone is accepted only to return the current unsupported-account validation."
+  description = "AWS account type declared by the customer. Set to management for management/payer and standalone accounts, or linked for linked/member accounts. Standalone is accepted only to return a validation that directs customers to management."
   type        = string
   default     = null
 
@@ -135,7 +135,7 @@ variable "iam_propagation_delay" {
 }
 
 variable "enable_organization_trust" {
-  description = "Add an org-wide trust statement to the Zesty IAM role, allowing any principal in the same AWS Organization to assume it. Required when linked-account Kompass clusters need cross-account CUR/Athena access via management_role_arn."
+  description = "Add an org-wide trust statement to the Zesty IAM role. Enable only when linked-account Kompass clusters need to assume this management-account role for CUR/Athena access. Leave false for standalone accounts."
   type        = bool
   default     = false
 }

@@ -60,10 +60,13 @@ Set `account_type` to match the AWS account you are onboarding:
 
 | Account type | Use for | CUR | Athena/Glue |
 | --- | --- | --- | --- |
-| `management` | AWS Organizations management/payer account | Created or referenced when needed | Created when Kompass is enabled |
+| `management` | AWS Organizations management/payer or standalone account | Created or referenced when needed | Created when Kompass is enabled |
 | `linked` | AWS Organizations linked/member account | Not created | Not created |
 
-Standalone AWS accounts are not supported yet.
+A standalone AWS account owns its own billing data, so it follows the management
+account path. Configure it with `account_type = "management"`. Keep
+`enable_organization_trust = false` because a standalone account is not a member
+of AWS Organizations.
 
 ## Examples
 
@@ -86,6 +89,9 @@ module "zesty_account" {
   account_type = "management"
 }
 ```
+
+The same block is used for a standalone AWS account. The module creates its CUR
+and base read-only permissions without requiring AWS Organizations.
 
 ### CM On A Management Account
 
@@ -297,6 +303,7 @@ When `cur.mode = "create"`, the module currently creates CUR v1 with
 | `policy_name` | Zesty IAM inline policy name | `ZestyPolicy` |
 | `trusted_principal` | AWS principal trusted to assume the Zesty role | Zesty default |
 | `region` | AWS region sent to Zesty | AWS provider region |
+| `enable_organization_trust` | Allow same-organization linked clusters to assume this role | `false` |
 | `create_values_local_file` | Write Kompass values to a local file | `false` |
 | `iam_propagation_delay` | Wait after IAM changes before Zesty validation | `20s` |
 | `tags` | Tags applied to created AWS resources | `{}` |
