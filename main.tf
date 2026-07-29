@@ -5,7 +5,7 @@ data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
 data "aws_organizations_organization" "current" {
-  count = (var.enable_organization_trust || local.declared_account_type == "management") && var.trusted_organization_id == "" ? 1 : 0
+  count = var.enable_organization_trust && var.trusted_organization_id == "" ? 1 : 0
 
   return_organization_only = true
 }
@@ -53,7 +53,7 @@ resource "aws_iam_role" "zesty_iam_role" {
   lifecycle {
     precondition {
       condition     = local.account_type != null && local.account_type != ""
-      error_message = "account_type is required. Set account_type to management or linked. Standalone is accepted only to return the current unsupported-account validation."
+      error_message = "account_type is required. Set account_type to management for management/payer and standalone accounts, or linked for linked/member accounts."
     }
 
     precondition {
@@ -63,7 +63,7 @@ resource "aws_iam_role" "zesty_iam_role" {
 
     precondition {
       condition     = local.account_type == null || local.account_type != "standalone"
-      error_message = "Standalone AWS accounts are not supported yet. Use an AWS Organizations management or linked account, or wait for Product to define standalone support."
+      error_message = "Use account_type = \"management\" for a standalone AWS account because standalone accounts follow the management/payer onboarding flow."
     }
 
     precondition {

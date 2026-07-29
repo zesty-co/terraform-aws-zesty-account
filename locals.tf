@@ -14,7 +14,7 @@ locals {
 
   organization_id = var.trusted_organization_id != "" ? var.trusted_organization_id : try(data.aws_organizations_organization.current[0].id, "")
 
-  organization_trust_statement = (var.enable_organization_trust || local.account_type == "management") ? [
+  organization_trust_statement = var.enable_organization_trust ? [
     {
       Sid    = "AllowOrganizationAssume"
       Effect = "Allow"
