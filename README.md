@@ -22,13 +22,41 @@ provider alias.
 - AWS credentials for the account being onboarded
 - A Zesty API token configured for the `zesty` provider
 
-Set the Zesty API token in the environment before running Terraform:
+## Zesty Provider Authentication
+
+The Zesty provider needs an API token during `plan`, `apply`, and `destroy`.
+
+### CI/CD secret (recommended)
+
+Store `ZESTY_API_TOKEN` as a protected environment secret in your CI/CD or
+Terraform execution platform. The runner injects it automatically on every run.
+For local runs, set it in your shell:
 
 ```bash
 export ZESTY_API_TOKEN="<your-zesty-api-token>"
 ```
 
-Keep the token out of Terraform configuration and version control.
+```hcl
+provider "zesty" {}
+```
+
+### AWS Secrets Manager
+
+With Terraform `>= 1.10`, the token can be fetched automatically without storing
+it in Terraform state or plan files:
+
+```hcl
+ephemeral "aws_secretsmanager_secret_version" "zesty" {
+  secret_id = "zesty/api-token"
+}
+
+provider "zesty" {
+  token = ephemeral.aws_secretsmanager_secret_version.zesty.secret_string
+}
+```
+
+The AWS identity running Terraform must have `secretsmanager:GetSecretValue`
+permission. Do not hardcode or commit the token to version control.
 
 ## Product Blocks
 
