@@ -24,49 +24,39 @@ provider alias.
 
 ## Zesty Provider Authentication
 
-The Zesty API token configures the `zesty` provider, not this module directly.
+The Zesty provider needs an API token during `plan`, `apply`, and `destroy`.
 
-### Recommended: environment variable
+### CI/CD secret (recommended)
 
-Provide the token through your shell, CI/CD secret store, or Terraform execution
-environment:
+Store `ZESTY_API_TOKEN` as a protected environment secret in your CI/CD or
+Terraform execution platform. The runner injects it automatically on every run.
+For local runs, set it in your shell:
 
 ```bash
 export ZESTY_API_TOKEN="<your-zesty-api-token>"
 ```
 
-The provider configuration can then remain empty:
-
 ```hcl
 provider "zesty" {}
 ```
 
-### Alternative: provider argument
+### AWS Secrets Manager
 
-The provider also accepts the token as an argument:
+With Terraform `>= 1.10`, the token can be fetched automatically without storing
+it in Terraform state or plan files:
 
 ```hcl
-variable "zesty_api_token" {
-  type        = string
-  description = "Zesty API token."
-  sensitive   = true
+ephemeral "aws_secretsmanager_secret_version" "zesty" {
+  secret_id = "zesty/api-token"
 }
 
 provider "zesty" {
-  token = var.zesty_api_token
+  token = ephemeral.aws_secretsmanager_secret_version.zesty.secret_string
 }
 ```
 
-Supply the variable through a protected CI/CD secret or environment variable:
-
-```bash
-export TF_VAR_zesty_api_token="<your-zesty-api-token>"
-```
-
-Do not hardcode the token or commit it to `.tf`, `.tfvars`, or version-control
-files. Reading it through a Terraform-managed secret data source is possible,
-but may place the secret in Terraform state or saved plan files. Secure the
-state appropriately if using that approach.
+The AWS identity running Terraform must have `secretsmanager:GetSecretValue`
+permission. Do not hardcode or commit the token to version control.
 
 ## Product Blocks
 
