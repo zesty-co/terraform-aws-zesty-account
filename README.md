@@ -71,7 +71,7 @@ Example:
 ```hcl
 module "zesty_account" {
   source  = "zesty-co/zesty-account/aws"
-  version = "~> 0.1"
+  version = "~> 0.1.1"
 
   account_type = "management"
 
@@ -112,7 +112,7 @@ provider "zesty" {}
 
 module "zesty_account" {
   source  = "zesty-co/zesty-account/aws"
-  version = "~> 0.1"
+  version = "~> 0.1.1"
 
   account_type = "management"
 }
@@ -132,7 +132,7 @@ provider "zesty" {}
 
 module "zesty_account" {
   source  = "zesty-co/zesty-account/aws"
-  version = "~> 0.1"
+  version = "~> 0.1.1"
 
   account_type = "management"
 
@@ -148,7 +148,7 @@ instead of creating a new one.
 ```hcl
 module "zesty_account" {
   source  = "zesty-co/zesty-account/aws"
-  version = "~> 0.1"
+  version = "~> 0.1.1"
 
   account_type = "management"
 
@@ -171,7 +171,7 @@ Kompass into EKS. Linked accounts do not create CUR, Athena, or Glue.
 ```hcl
 module "zesty_account" {
   source  = "zesty-co/zesty-account/aws"
-  version = "~> 0.1"
+  version = "~> 0.1.1"
 
   account_type = "linked"
 
@@ -205,7 +205,7 @@ provider "zesty" {}
 
 module "management_account" {
   source  = "zesty-co/zesty-account/aws"
-  version = "~> 0.1"
+  version = "~> 0.1.1"
 
   providers = {
     aws = aws.management
@@ -218,7 +218,7 @@ module "management_account" {
 
 module "linked_account" {
   source  = "zesty-co/zesty-account/aws"
-  version = "~> 0.1"
+  version = "~> 0.1.1"
 
   providers = {
     aws = aws.linked
@@ -235,7 +235,7 @@ module "linked_account" {
 ```hcl
 module "zesty_account" {
   source  = "zesty-co/zesty-account/aws"
-  version = "~> 0.1"
+  version = "~> 0.1.1"
 
   account_type = "management"
 
@@ -279,7 +279,7 @@ provider "helm" {
 
 module "zesty_account" {
   source  = "zesty-co/zesty-account/aws"
-  version = "~> 0.1"
+  version = "~> 0.1.1"
 
   account_type = "linked"
 
@@ -288,7 +288,7 @@ module "zesty_account" {
 
 module "kompass_cluster" {
   source  = "zesty-co/zesty-account/aws//modules/kompass-cluster"
-  version = "~> 0.1"
+  version = "~> 0.1.1"
 
   kompass_values_yaml = module.zesty_account.kompass_values_yaml
 

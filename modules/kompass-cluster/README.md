@@ -29,7 +29,7 @@ provider "helm" {
 
 module "kompass_cluster" {
   source  = "zesty-co/zesty-account/aws//modules/kompass-cluster"
-  version = "~> 0.1"
+  version = "~> 0.1.1"
 
   kompass_values_yaml = module.zesty_account.kompass_values_yaml
 }
@@ -42,7 +42,7 @@ For EKS Pod Identity, let the module create the IAM role and associations:
 ```hcl
 module "kompass_cluster" {
   source  = "zesty-co/zesty-account/aws//modules/kompass-cluster"
-  version = "~> 0.1"
+  version = "~> 0.1.1"
 
   kompass_values_yaml = module.zesty_account.kompass_values_yaml
 
@@ -63,7 +63,7 @@ to each module block.
 ```hcl
 module "kompass_cluster_prod" {
   source  = "zesty-co/zesty-account/aws//modules/kompass-cluster"
-  version = "~> 0.1"
+  version = "~> 0.1.1"
 
   providers = {
     helm = helm.prod
@@ -74,7 +74,7 @@ module "kompass_cluster_prod" {
 
 module "kompass_cluster_dev" {
   source  = "zesty-co/zesty-account/aws//modules/kompass-cluster"
-  version = "~> 0.1"
+  version = "~> 0.1.1"
 
   providers = {
     helm = helm.dev

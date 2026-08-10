@@ -59,7 +59,7 @@ provider "zesty" {}
 
 module "cm_management_account" {
   source  = "zesty-co/zesty-account/aws"
-  version = "~> 0.1"
+  version = "~> 0.1.1"
 
   providers = {
     aws = aws.management
@@ -72,7 +72,7 @@ module "cm_management_account" {
 
 module "kompass_linked_account" {
   source  = "zesty-co/zesty-account/aws"
-  version = "~> 0.1"
+  version = "~> 0.1.1"
 
   providers = {
     aws = aws.linked_account
@@ -107,7 +107,7 @@ provider "helm" {
 
 module "kompass_cluster" {
   source  = "zesty-co/zesty-account/aws//modules/kompass-cluster"
-  version = "~> 0.1"
+  version = "~> 0.1.1"
 
   kompass_values_yaml = module.kompass_linked_account.kompass_values_yaml
 }
