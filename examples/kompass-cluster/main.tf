@@ -52,7 +52,7 @@ provider "helm" {
 
 module "zesty_aws_account" {
   source  = "zesty-co/zesty-account/aws"
-  version = "~> 0.1"
+  version = "~> 0.1.1"
 
   account_type = "linked"
 
@@ -63,7 +63,7 @@ module "zesty_aws_account" {
 
 module "kompass_cluster" {
   source  = "zesty-co/zesty-account/aws//modules/kompass-cluster"
-  version = "~> 0.1"
+  version = "~> 0.1.1"
 
   kompass_values_yaml = module.zesty_aws_account.kompass_values_yaml
 
