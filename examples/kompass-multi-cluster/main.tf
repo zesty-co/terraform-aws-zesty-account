@@ -43,16 +43,8 @@ data "aws_eks_cluster" "prod" {
   name = var.prod_cluster_name
 }
 
-data "aws_eks_cluster_auth" "prod" {
-  name = data.aws_eks_cluster.prod.name
-}
-
 data "aws_eks_cluster" "dev" {
   name = var.dev_cluster_name
-}
-
-data "aws_eks_cluster_auth" "dev" {
-  name = data.aws_eks_cluster.dev.name
 }
 
 provider "helm" {
@@ -61,7 +53,11 @@ provider "helm" {
   kubernetes {
     host                   = data.aws_eks_cluster.prod.endpoint
     cluster_ca_certificate = base64decode(data.aws_eks_cluster.prod.certificate_authority[0].data)
-    token                  = data.aws_eks_cluster_auth.prod.token
+    exec {
+      api_version = "client.authentication.k8s.io/v1beta1"
+      command     = "aws"
+      args        = ["eks", "get-token", "--cluster-name", data.aws_eks_cluster.prod.name, "--region", var.region]
+    }
   }
 }
 
@@ -71,7 +67,11 @@ provider "helm" {
   kubernetes {
     host                   = data.aws_eks_cluster.dev.endpoint
     cluster_ca_certificate = base64decode(data.aws_eks_cluster.dev.certificate_authority[0].data)
-    token                  = data.aws_eks_cluster_auth.dev.token
+    exec {
+      api_version = "client.authentication.k8s.io/v1beta1"
+      command     = "aws"
+      args        = ["eks", "get-token", "--cluster-name", data.aws_eks_cluster.dev.name, "--region", var.region]
+    }
   }
 }
 

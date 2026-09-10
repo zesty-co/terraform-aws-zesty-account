@@ -15,5 +15,5 @@ output "status" {
 
 output "insights_agent_role_arn" {
   description = "ARN of the insights-agent IAM role. Null when neither irsa_enabled nor pod_identity_enabled is true."
-  value       = local.iam_enabled ? aws_iam_role.insights_agent[0].arn : null
+  value       = module.iam.insights_agent_role_arn
 }
