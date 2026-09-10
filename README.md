@@ -247,10 +247,22 @@ module "zesty_account" {
 ## Kompass Cluster Installation
 
 Kompass account onboarding and Kompass cluster installation are separate steps.
-The account module outputs `kompass_values_yaml`; the cluster module uses those
-values to install the Kompass Helm chart into an EKS cluster.
+The account module outputs sensitive `kompass_values_yaml`. Choose how to install:
 
-The EKS cluster is selected by the caller's Helm provider configuration.
+- [Helm CLI](examples/kompass-helm-cli): Terraform owns account/pod IAM, Helm owns the release.
+- [Your own helm_release](examples/kompass-custom-helm-release): keep Helm settings in your configuration.
+- The optional `modules/kompass-cluster` wrapper: packages Helm and pod IAM together.
+
+The new `modules/kompass-cluster-iam` is AWS-only and can be used independently.
+It is available in this checkout and requires the next module release; version
+`0.1.1` does not contain it. No Helm provider is needed for account-only or
+IAM-only usage. See [storage](docs/storage.md) and [migration](docs/helm-migration.md).
+
+The EKS cluster is selected by the caller's Helm provider configuration. Exec
+authentication uses the AWS CLI credential chain, not the AWS provider's
+`assume_role` settings. Configure the CLI role/profile and region accordingly.
+For existing kubeconfig users, `config_path` plus an explicit `config_context`
+is also supported. Keep Kubernetes connectivity in the caller.
 
 ```hcl
 variable "cluster_name" {
@@ -265,15 +277,15 @@ data "aws_eks_cluster" "target" {
   name = var.cluster_name
 }
 
-data "aws_eks_cluster_auth" "target" {
-  name = data.aws_eks_cluster.target.name
-}
-
 provider "helm" {
   kubernetes {
     host                   = data.aws_eks_cluster.target.endpoint
     cluster_ca_certificate = base64decode(data.aws_eks_cluster.target.certificate_authority[0].data)
-    token                  = data.aws_eks_cluster_auth.target.token
+    exec {
+      api_version = "client.authentication.k8s.io/v1beta1"
+      command     = "aws"
+      args        = ["eks", "get-token", "--cluster-name", var.cluster_name, "--region", "us-west-2"]
+    }
   }
 }
 
@@ -354,10 +366,15 @@ See `variables.tf` for the full input list.
 `external_id` and `kompass_values_yaml` are sensitive outputs. Terraform stores
 them in state, so protect access to the state backend.
 
+Optional local values now use `local_sensitive_file` and create new files with
+mode `0600`. Existing users of `create_values_local_file = true` must follow the
+[state and file-permission migration](docs/helm-migration.md#existing-generated-local-values-file)
+before upgrading.
+
 ## Current Limitations
 
-- CM automation is supported on management/payer accounts only.
-- Standalone AWS accounts are not supported yet.
+- CM automation is supported on management/payer and standalone accounts.
+- Standalone accounts use `account_type = "management"` with organization trust disabled.
 - Creating CUR through this module currently creates CUR v1. Use
   `cur.mode = "existing"` for CUR v2.
 - UI/CloudFormation to Terraform migration requires an adoption plan before the

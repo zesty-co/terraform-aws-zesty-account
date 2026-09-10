@@ -15,15 +15,15 @@ data "aws_eks_cluster" "target" {
   name = var.cluster_name
 }
 
-data "aws_eks_cluster_auth" "target" {
-  name = data.aws_eks_cluster.target.name
-}
-
 provider "helm" {
   kubernetes {
     host                   = data.aws_eks_cluster.target.endpoint
     cluster_ca_certificate = base64decode(data.aws_eks_cluster.target.certificate_authority[0].data)
-    token                  = data.aws_eks_cluster_auth.target.token
+    exec {
+      api_version = "client.authentication.k8s.io/v1beta1"
+      command = "aws"
+      args = ["eks", "get-token", "--cluster-name", var.cluster_name, "--region", var.region]
+    }
   }
 }
 
@@ -94,3 +94,19 @@ See `examples/kompass-multi-cluster` for the full provider-alias example.
   through Helm hooks after the main release is created.
 - `storage_class_name` is optional. Use it only when the cluster requires a
   specific Kubernetes StorageClass.
+
+## Optional wrapper and readiness
+
+For Helm CLI/GitOps or a caller-owned Helm resource, use the AWS-only
+[kompass-cluster-iam](../kompass-cluster-iam) module. Existing wrapper users retain
+resource ownership through the included `moved` declarations. See
+[migration](../../docs/helm-migration.md) before changing ownership.
+
+`wait = false` accommodates post-install certificate hooks; it does not certify
+pod readiness. Check Deployments, StatefulSets, and bound PVCs after installation.
+Pin `chart_version` in production. The Helm provider remains pinned to 2.17 until
+3.x is separately validated against the chart's hooks.
+
+`extra_values` is applied last and may intentionally override generated fields.
+Preserve account credentials and match the IAM module's ServiceAccount names.
+See [storage](../../docs/storage.md) for default/override behavior.

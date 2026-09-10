@@ -37,3 +37,15 @@ jobs:
       - name: Validate Kompass cluster module
         working-directory: modules/kompass-cluster
         run: terraform validate
+
+      - name: Initialize Kompass IAM module
+        working-directory: modules/kompass-cluster-iam
+        run: terraform init -backend=false
+
+      - name: Validate Kompass IAM module
+        working-directory: modules/kompass-cluster-iam
+        run: terraform validate
+
+      - name: Test Kompass IAM identities and overlays
+        working-directory: modules/kompass-cluster-iam
+        run: terraform test

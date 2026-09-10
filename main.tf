@@ -371,9 +371,11 @@ resource "zesty_account" "result" {
   ]
 }
 
-resource "local_file" "kompass_values" {
-  count      = module.kompass.enabled && var.create_values_local_file ? 1 : 0
-  content    = coalesce(local.values_content, "")
-  filename   = var.values_yaml_filename
-  depends_on = [zesty_account.result]
+resource "local_sensitive_file" "kompass_values" {
+  count                = module.kompass.enabled && var.create_values_local_file ? 1 : 0
+  content              = coalesce(local.values_content, "")
+  filename             = var.values_yaml_filename
+  file_permission      = "0600"
+  directory_permission = "0700"
+  depends_on           = [zesty_account.result]
 }
